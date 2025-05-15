@@ -1,4 +1,9 @@
 <script>
+    // Calcola la percentuale di occupazione in base alla quantità (7000 kg = 100%)
+    function calculateOccupazione(quantita) {
+      return Math.min(Math.round((quantita / 7000) * 100), 100);
+    }
+    
     // Dati dei silos
     const silosData = {
       A: [
@@ -20,20 +25,15 @@
         { id: 'B7', occupazione: calculateOccupazione(0), tipologia: null, fornitore: null, quantita: 0, inizioLavorazione: null, fineLavorazione: null, portataOraria: 0 }
       ],
       C: [
-        { id: 'C1', occupazione: calculateOccupazione(4550), tipologia: 'Mandarini', fornitore: 'Agrumi Sicilia S.r.l.', quantita: 4550, inizioLavorazione: '15/05/2025 07:45', fineLavorazione: '15/05/2025 12:15', portataOraria: 2510 },
+        { id: 'C1', occupazione: calculateOccupazione(4550), tipologia: 'Mandarini', fornitore: 'Agrumi Sicilia S.r.l.', quantita: 4550, inizioLavorazione: '15/05/2025 07:45', fineLavorazione: '15/05/2025 12:15', portataOraria: 1010 },
         { id: 'C2', occupazione: calculateOccupazione(0), tipologia: null, fornitore: null, quantita: 0, inizioLavorazione: null, fineLavorazione: null, portataOraria: 0 },
-        { id: 'C3', occupazione: calculateOccupazione(3500), tipologia: 'Mandarini', fornitore: 'Azienda Agricola Rossi', quantita: 3500, inizioLavorazione: '15/05/2025 08:15', fineLavorazione: '15/05/2025 12:45', portataOraria: 2050 },
-        { id: 'C4', occupazione: calculateOccupazione(6850), tipologia: 'Mandarini', fornitore: 'Limoni del Sud S.p.A.', quantita: 6850, inizioLavorazione: '15/05/2025 06:30', fineLavorazione: '15/05/2025 13:30', portataOraria: 2240 },
-        { id: 'C5', occupazione: calculateOccupazione(2450), tipologia: 'Mandarini', fornitore: 'Agrumi Sicilia S.r.l.', quantita: 2450, inizioLavorazione: '15/05/2025 10:15', fineLavorazione: '15/05/2025 13:45', portataOraria: 1940 },
+        { id: 'C3', occupazione: calculateOccupazione(3500), tipologia: 'Mandarini', fornitore: 'Azienda Agricola Rossi', quantita: 3500, inizioLavorazione: '15/05/2025 08:15', fineLavorazione: '15/05/2025 12:45', portataOraria: 780 },
+        { id: 'C4', occupazione: calculateOccupazione(6850), tipologia: 'Mandarini', fornitore: 'Limoni del Sud S.p.A.', quantita: 6850, inizioLavorazione: '15/05/2025 06:30', fineLavorazione: '15/05/2025 13:30', portataOraria: 975 },
+        { id: 'C5', occupazione: calculateOccupazione(2450), tipologia: 'Mandarini', fornitore: 'Agrumi Sicilia S.r.l.', quantita: 2450, inizioLavorazione: '15/05/2025 10:15', fineLavorazione: '15/05/2025 13:45', portataOraria: 700 },
         { id: 'C6', occupazione: calculateOccupazione(0), tipologia: null, fornitore: null, quantita: 0, inizioLavorazione: null, fineLavorazione: null, portataOraria: 0 },
-        { id: 'C7', occupazione: calculateOccupazione(1400), tipologia: 'Mandarini', fornitore: 'Limoni del Sud S.p.A.', quantita: 1400, inizioLavorazione: '15/05/2025 14:00', fineLavorazione: '15/05/2025 16:00', portataOraria: 1925 }
+        { id: 'C7', occupazione: calculateOccupazione(1400), tipologia: 'Mandarini', fornitore: 'Limoni del Sud S.p.A.', quantita: 1400, inizioLavorazione: '15/05/2025 14:00', fineLavorazione: '15/05/2025 16:00', portataOraria: 700 }
       ]
     };
-    
-    // Calcola la percentuale di occupazione in base alla quantità (7000 kg = 100%)
-    function calculateOccupazione(quantita) {
-      return Math.min(Math.round((quantita / 7000) * 100), 100);
-    }
     
     // Funzioni per la gestione dell'interfaccia
     function switchTab(tabId) {
@@ -446,9 +446,10 @@
       updateSilosSelection();
     }
     
-    // Inizializza le icone e la vista silos
-    document.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
+    // Inizializza l'app
+    document.addEventListener('DOMContentLoaded', function() {
+      // Inizializza le icone Feather
+      feather.replace();
       
       // Popola la vista silos
       populateSilosView();
@@ -460,3 +461,5 @@
       document.getElementById('silos-select').addEventListener('change', handleSilosSelect);
     });
   </script>
+</body>
+</html>
