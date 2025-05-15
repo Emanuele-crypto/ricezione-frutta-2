@@ -1,342 +1,879 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema Gestione Agrumi - Ricezione Frutta</title>
-  <!-- Importa Tailwind da CDN -->
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    /* Stili personalizzati */
-    .silos-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 16px;
-    }
-    .silos-item {
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .progress-bar {
-      height: 8px;
-      border-radius: 4px;
-      background-color: #e2e8f0;
-      margin-bottom: 4px;
-      overflow: hidden;
-    }
-  </style>
-</head>
-<body class="min-h-screen bg-gray-100">
-  <!-- Header -->
-  <header class="bg-blue-700 text-white shadow-md">
-    <div class="container mx-auto p-4">
-      <div class="flex justify-between items-center">
-        <div>
-          <h1 class="text-xl font-bold">Sistema Gestione Agrumi</h1>
-        </div>
-        <div>
-          <button 
-            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow"
-            onclick="alert('Passaggio al reparto Trasformazione. La dashboard verrà creata in un secondo momento.');"
-          >
-            Reparto Trasformazione
-          </button>
-        </div>
-      </div>
-      <div class="mt-4 text-lg">Reparto: Ricezione Frutta</div>
-    </div>
-  </header>
-  
-  <!-- Navigation Tabs -->
-  <div class="container mx-auto px-4 mt-6">
-    <div class="flex overflow-x-auto space-x-2 pb-2">
-      <button class="tab-button px-4 py-2 rounded-t font-medium bg-white shadow-md" 
-              onclick="switchTab('accettazione')">Accettazione</button>
-      <button class="tab-button px-4 py-2 rounded-t font-medium bg-gray-200 hover:bg-gray-300" 
-              onclick="switchTab('silos')">Vista Silos</button>
-      <button class="tab-button px-4 py-2 rounded-t font-medium bg-gray-200 hover:bg-gray-300" 
-              onclick="switchTab('giacenze')">Giacenze</button>
-      <button class="tab-button px-4 py-2 rounded-t font-medium bg-gray-200 hover:bg-gray-300" 
-              onclick="switchTab('report')">Report</button>
-    </div>
-  </div>
-  
-  <!-- Main Content -->
-  <main class="container mx-auto px-4 pb-12">
-    <!-- Tab Accettazione -->
-    <div id="tab-accettazione" class="p-4 max-w-4xl mx-auto">
-      <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-xl font-bold mb-4">Registrazione Nuovo Arrivo</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium mb-1">Fornitore</label>
-            <select id="fornitore" class="w-full border rounded p-2">
-              <option value="">Seleziona fornitore</option>
-              <option value="1">Agrumi Sicilia S.r.l.</option>
-              <option value="2">Azienda Agricola Rossi</option>
-              <option value="3">Limoni del Sud S.p.A.</option>
-            </select>
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium mb-1">Targa Camion</label>
-            <input type="text" id="targa" class="w-full border rounded p-2" placeholder="AB123CD" />
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium mb-1">Tipologia Agrume</label>
-            <select id="tipoAgrume" class="w-full border rounded p-2">
-              <option value="arance-bionde">Arance Bionde</option>
-              <option value="arance-rosse">Arance Rosse</option>
-              <option value="limoni">Limoni</option>
-              <option value="mandarini">Mandarini</option>
-              <option value="pompelmi">Pompelmi</option>
-              <option value="bergamotti">Bergamotti</option>
-            </select>
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium mb-1">Tipologia Frutta</label>
-            <select id="tipologiaFrutta" class="w-full border rounded p-2">
-              <option value="convenzionale">Convenzionale</option>
-              <option value="igp">IGP</option>
-              <option value="bio-demeter">Bio Demeter</option>
-              <option value="bio-eu">Bio EU</option>
-              <option value="bio-naturland">Bio Naturland</option>
-              <option value="altre">Altre</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="mt-6 flex justify-end">
-          <button 
-            onclick="alert('Arrivo registrato con successo!');"
-            class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-          >
-            Registra Arrivo
-          </button>
-        </div>
-      </div>
-      
-      <div class="mt-8 bg-white rounded-lg shadow">
-        <h2 class="text-xl font-bold p-4 border-b">Arrivi Recenti</h2>
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead>
-              <tr class="bg-gray-100">
-                <th class="p-3 text-left">ID</th>
-                <th class="p-3 text-left">Fornitore</th>
-                <th class="p-3 text-left">Targa</th>
-                <th class="p-3 text-left">Arrivo</th>
-                <th class="p-3 text-left">Peso Netto (kg)</th>
-                <th class="p-3 text-left">Stato</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="border-t hover:bg-gray-50">
-                <td class="p-3">ARR001</td>
-                <td class="p-3">Agrumi Sicilia S.r.l.</td>
-                <td class="p-3">AB123CD</td>
-                <td class="p-3">15/05/2025 08:30</td>
-                <td class="p-3">12.450</td>
-                <td class="p-3">
-                  <span class="px-2 py-1 rounded text-sm bg-green-100 text-green-800">
-                    Completato
-                  </span>
-                </td>
-              </tr>
-              <tr class="border-t hover:bg-gray-50">
-                <td class="p-3">ARR002</td>
-                <td class="p-3">Azienda Agricola Rossi</td>
-                <td class="p-3">EF456GH</td>
-                <td class="p-3">15/05/2025 09:15</td>
-                <td class="p-3">8.320</td>
-                <td class="p-3">
-                  <span class="px-2 py-1 rounded text-sm bg-yellow-100 text-yellow-800">
-                    In corso
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Tab Silos -->
-    <div id="tab-silos" class="p-4 max-w-6xl mx-auto hidden">
-      <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-xl font-bold mb-4">Linea A</h2>
-        <div class="silos-grid">
-          <!-- Silos esempio -->
-          <div class="silos-item">
-            <div class="bg-green-200 p-2 text-center font-bold">A1</div>
-            <div class="p-3">
-              <div class="relative pt-1">
-                <div class="progress-bar">
-                  <div class="h-full bg-green-500" style="width: 60%"></div>
-                </div>
-                <div class="text-xs text-right">60% (4200 kg / 7.000 kg)</div>
-              </div>
-              <div class="text-xs mt-2">
-                <div class="font-semibold">Tipo:</div>
-                <div>Arance Bionde</div>
-              </div>
-              <div class="text-xs mt-1">
-                <div class="font-semibold">Fornitore:</div>
-                <div class="truncate">Agrumi Sicilia S.r.l.</div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="silos-item">
-            <div class="bg-yellow-200 p-2 text-center font-bold">A2</div>
-            <div class="p-3">
-              <div class="relative pt-1">
-                <div class="progress-bar">
-                  <div class="h-full bg-yellow-500" style="width: 75%"></div>
-                </div>
-                <div class="text-xs text-right">75% (5250 kg / 7.000 kg)</div>
-              </div>
-              <div class="text-xs mt-2">
-                <div class="font-semibold">Tipo:</div>
-                <div>Arance Rosse</div>
-              </div>
-              <div class="text-xs mt-1">
-                <div class="font-semibold">Fornitore:</div>
-                <div class="truncate">Azienda Agricola Rossi</div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="silos-item">
-            <div class="bg-red-200 p-2 text-center font-bold">A3</div>
-            <div class="p-3">
-              <div class="relative pt-1">
-                <div class="progress-bar">
-                  <div class="h-full bg-red-500" style="width: 95%"></div>
-                </div>
-                <div class="text-xs text-right">95% (6650 kg / 7.000 kg)</div>
-              </div>
-              <div class="text-xs mt-2">
-                <div class="font-semibold">Tipo:</div>
-                <div>Arance Bionde</div>
-              </div>
-              <div class="text-xs mt-1">
-                <div class="font-semibold">Fornitore:</div>
-                <div class="truncate">Limoni del Sud S.p.A.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Tab Giacenze -->
-    <div id="tab-giacenze" class="p-4 max-w-4xl mx-auto hidden">
-      <div class="bg-white rounded-lg shadow">
-        <h2 class="text-xl font-bold p-4 border-b">Giacenze Attive</h2>
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead>
-              <tr class="bg-gray-100">
-                <th class="p-3 text-left">ID</th>
-                <th class="p-3 text-left">Silos</th>
-                <th class="p-3 text-left">Fornitore</th>
-                <th class="p-3 text-left">Quantità (kg)</th>
-                <th class="p-3 text-left">Azioni</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="border-t hover:bg-gray-50">
-                <td class="p-3">G001</td>
-                <td class="p-3">A3</td>
-                <td class="p-3">Limoni del Sud S.p.A.</td>
-                <td class="p-3">6.650</td>
-                <td class="p-3">
-                  <button class="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700">
-                    Invia a Trasformazione
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Tab Report -->
-    <div id="tab-report" class="p-4 max-w-4xl mx-auto hidden">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-white rounded-lg shadow p-6">
-          <h2 class="text-xl font-bold mb-4">Statistiche Giornaliere</h2>
-          <div class="space-y-4">
-            <div class="border-b pb-2">
-              <div class="font-medium">Totale Arrivi Oggi</div>
-              <div class="text-2xl font-bold">8</div>
-            </div>
-            <div class="border-b pb-2">
-              <div class="font-medium">Totale Peso Netto (kg)</div>
-              <div class="text-2xl font-bold">78.250</div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="bg-white rounded-lg shadow p-6">
-          <h2 class="text-xl font-bold mb-4">Stato Silos</h2>
-          <div class="space-y-4">
-            <div class="border-b pb-2">
-              <div class="font-medium">Capacità totale silos</div>
-              <div class="text-2xl font-bold">147.000 kg</div>
-              <div class="text-xs text-gray-500">(21 silos x 7.000 kg)</div>
-            </div>
-            <div class="border-b pb-2">
-              <div class="font-medium">Occupazione Media</div>
-              <div class="text-2xl font-bold">45%</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
-  
-  <!-- Footer -->
-  <footer class="bg-gray-800 text-white py-4">
-    <div class="container mx-auto px-4 text-center text-sm">
-      © 2025 Sistema Gestione Agrumi - v1.0 | Ultima sincronizzazione: 15/05/2025 15:30
-    </div>
-  </footer>
-
-  <script>
-    // Funzione per cambiare tab
-    function switchTab(tabId) {
-      // Nascondi tutti i tab
-      document.querySelectorAll('#tab-accettazione, #tab-silos, #tab-giacenze, #tab-report').forEach(tab => {
-        tab.classList.add('hidden');
-      });
-      
-      // Mostra il tab selezionato
-      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-      
-      // Aggiorna lo stile dei pulsanti
-      document.querySelectorAll('.tab-button').forEach(button => {
-        button.classList.remove('bg-white', 'shadow-md');
-        button.classList.add('bg-gray-200', 'hover:bg-gray-300');
-      });
-      
-      // Imposta lo stile del pulsante selezionato
-      const buttons = document.querySelectorAll('.tab-button');
-      for (let i = 0; i < buttons.length; i++) {
-        if (buttons[i].textContent.trim().toLowerCase().includes(tabId)) {
-          buttons[i].classList.remove('bg-gray-200', 'hover:bg-gray-300');
-          buttons[i].classList.add('bg-white', 'shadow-md');
-          break;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Gestione Aziendale - Trasformazione Agrumi</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
         }
-      }
-    }
-  </script>
+        .header {
+            background-color: #28a745;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 0 0 10px 10px;
+        }
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        .silos-status {
+            margin-top: 30px;
+        }
+        .silos-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .silos {
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .silos:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .silos.selected {
+            background-color: #d4edda;
+            border-color: #28a745;
+        }
+        .silos.empty {
+            background-color: #f8f9fa;
+        }
+        .silos.partial {
+            background-color: #fff3cd;
+        }
+        .silos.full {
+            background-color: #f8d7da;
+        }
+        .silos-label {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .nav-tabs {
+            margin-bottom: 20px;
+        }
+        .table-responsive {
+            margin-top: 20px;
+        }
+        .btn-section {
+            margin-top: 30px;
+            text-align: right;
+        }
+        .silos-content {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .silos-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 2px 5px;
+            border-radius: 50%;
+            font-size: 10px;
+            color: white;
+            background-color: #6c757d;
+        }
+        .fruit-type {
+            display: inline-block;
+            padding: 4px;
+            border-radius: 3px;
+            font-size: 10px;
+            margin-top: 3px;
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Sistema Gestione Trasformazione Agrumi</h1>
+        <h3>Reparto 1: Ricezione Frutta</h3>
+    </div>
+
+    <div class="dashboard-container">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="inserimento-tab" data-bs-toggle="tab" data-bs-target="#inserimento" type="button" role="tab" aria-controls="inserimento" aria-selected="true">Inserimento Dati</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="stato-silos-tab" data-bs-toggle="tab" data-bs-target="#stato-silos" type="button" role="tab" aria-controls="stato-silos" aria-selected="false">Stato Silos</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="report-tab" data-bs-toggle="tab" data-bs-target="#report" type="button" role="tab" aria-controls="report" aria-selected="false">Report Giacenze</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="myTabContent">
+            <!-- TAB INSERIMENTO DATI -->
+            <div class="tab-pane fade show active" id="inserimento" role="tabpanel" aria-labelledby="inserimento-tab">
+                <h4 class="mb-3">Inserimento Dati Ricezione</h4>
+                
+                <form id="reception-form">
+                    <div class="form-section">
+                        <h5>Dati Fornitore e Trasporto</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="fornitore" class="form-label">Nome Fornitore</label>
+                                <input type="text" class="form-control" id="fornitore" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="tipologia" class="form-label">Tipologia</label>
+                                <select class="form-select" id="tipologia" required>
+                                    <option value="">Seleziona tipologia</option>
+                                    <option value="Convenzionale">Convenzionale</option>
+                                    <option value="Bio EU">Bio EU</option>
+                                    <option value="Bio NTD">Bio NTD</option>
+                                    <option value="Bio DEM">Bio DEM</option>
+                                    <option value="IGP">IGP</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="targa" class="form-label">Targa</label>
+                                <input type="text" class="form-control" id="targa" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="peso-lordo" class="form-label">Peso Lordo (kg)</label>
+                                <input type="number" class="form-control" id="peso-lordo" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="peso-netto" class="form-label">Peso Netto (kg)</label>
+                                <input type="number" class="form-control" id="peso-netto" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h5>Dati Prodotto</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="tipo-agrume" class="form-label">Tipo di Agrume</label>
+                                <select class="form-select" id="tipo-agrume" required>
+                                    <option value="">Seleziona tipo</option>
+                                    <option value="Arance bionde">Arance bionde</option>
+                                    <option value="Arance rosse">Arance rosse</option>
+                                    <option value="Limoni">Limoni</option>
+                                    <option value="Mandarini">Mandarini</option>
+                                    <option value="Bergamotti">Bergamotti</option>
+                                    <option value="Pompelmi">Pompelmi</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="varieta" class="form-label">Varietà</label>
+                                <select class="form-select" id="varieta">
+                                    <option value="">Seleziona varietà</option>
+                                    <option value="Ciaculli">Ciaculli</option>
+                                    <option value="Moro">Moro</option>
+                                    <option value="Tarocco">Tarocco</option>
+                                    <option value="Verdello">Verdello</option>
+                                    <option value="Bianchetto">Bianchetto</option>
+                                    <option value="Sanguinello">Sanguinello</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h5>Destinazione Stoccaggio</h5>
+                        <p>Seleziona i silos di destinazione</p>
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-12">
+                                <h6>Linea A</h6>
+                                <div class="silos-grid" id="lineaA">
+                                    <div class="silos" data-silos="A1">
+                                        <div class="silos-label">A1</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                    <div class="silos" data-silos="A2">
+                                        <div class="silos-label">A2</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                    <div class="silos" data-silos="A3">
+                                        <div class="silos-label">A3</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                    <div class="silos" data-silos="A4">
+                                        <div class="silos-label">A4</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                    <div class="silos" data-silos="A5">
+                                        <div class="silos-label">A5</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                    <div class="silos" data-silos="A6">
+                                        <div class="silos-label">A6</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                    <div class="silos" data-silos="A7">
+                                        <div class="silos-label">A7</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <h6>Linea B</h6>
+                                <div class="silos-grid" id="lineaB">
+                                    <div class="silos" data-silos="B1">
+                                        <div class="silos-label">B1</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                    <div class="silos" data-silos="B2">
+                                        <div class="silos-label">B2</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                    <div class="silos" data-silos="B3">
+                                        <div class="silos-label">B3</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                    <div class="silos" data-silos="B4">
+                                        <div class="silos-label">B4</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                    <div class="silos" data-silos="B5">
+                                        <div class="silos-label">B5</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                    <div class="silos" data-silos="B6">
+                                        <div class="silos-label">B6</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                    <div class="silos" data-silos="B7">
+                                        <div class="silos-label">B7</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <h6>Linea C</h6>
+                                <div class="silos-grid" id="lineaC">
+                                    <div class="silos" data-silos="C1">
+                                        <div class="silos-label">C1</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                    <div class="silos" data-silos="C2">
+                                        <div class="silos-label">C2</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                    <div class="silos" data-silos="C3">
+                                        <div class="silos-label">C3</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                    <div class="silos" data-silos="C4">
+                                        <div class="silos-label">C4</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                    <div class="silos" data-silos="C5">
+                                        <div class="silos-label">C5</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                    <div class="silos" data-silos="C6">
+                                        <div class="silos-label">C6</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                    <div class="silos" data-silos="C7">
+                                        <div class="silos-label">C7</div>
+                                        <div class="silos-content"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Silos selezionati</label>
+                                <input type="text" class="form-control" id="silos-selezionati" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <button type="button" class="btn btn-primary" id="btn-registra">Registra Carico</button>
+                            <button type="button" class="btn btn-secondary" id="btn-reset">Reset Form</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- TAB STATO SILOS -->
+            <div class="tab-pane fade" id="stato-silos" role="tabpanel" aria-labelledby="stato-silos-tab">
+                <h4 class="mb-3">Stato Silos e Lavorazione</h4>
+                
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="silos-table">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Silos</th>
+                                <th>Stato</th>
+                                <th>Fornitore</th>
+                                <th>Tipo Agrume</th>
+                                <th>Varietà</th>
+                                <th>Tipologia</th>
+                                <th>Quantità (kg)</th>
+                                <th>Inizio Lavorazione</th>
+                                <th>Fine Lavorazione</th>
+                                <th>Portata (kg/h)</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- I dati dei silos verranno inseriti dinamicamente qui -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- TAB REPORT -->
+            <div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report-tab">
+                <h4 class="mb-3">Report Giacenze</h4>
+                
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Totale Frutta in Giacenza</h5>
+                                <h3 class="card-text" id="total-stock">0 kg</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Silos Occupati</h5>
+                                <h3 class="card-text" id="occupied-silos">0/21</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">In Lavorazione</h5>
+                                <h3 class="card-text" id="in-process">0 kg</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">In Attesa</h5>
+                                <h3 class="card-text" id="waiting">0 kg</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Giacenze per Fornitore</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped" id="supplier-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fornitore</th>
+                                        <th>Quantità (kg)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dati dinamici -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Giacenze per Tipo di Agrume</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped" id="fruit-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tipo Agrume</th>
+                                        <th>Quantità (kg)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dati dinamici -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="btn-section">
+            <button type="button" class="btn btn-success btn-lg" id="btn-next-dept">Vai al Reparto Trasformazione</button>
+        </div>
+    </div>
+
+    <!-- Modal per gestione lavorazione silos -->
+    <div class="modal fade" id="silosModal" tabindex="-1" aria-labelledby="silosModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="silosModalLabel">Gestione Lavorazione Silos</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="processing-form">
+                        <input type="hidden" id="silos-id">
+                        <div class="mb-3">
+                            <label for="silos-info" class="form-label">Silos</label>
+                            <input type="text" class="form-control" id="silos-info" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="start-time" class="form-label">Inizio Lavorazione</label>
+                            <input type="datetime-local" class="form-control" id="start-time">
+                        </div>
+                        <div class="mb-3">
+                            <label for="end-time" class="form-label">Fine Lavorazione</label>
+                            <input type="datetime-local" class="form-control" id="end-time">
+                        </div>
+                        <div class="mb-3">
+                            <label for="quantity-processed" class="form-label">Quantità Lavorata (kg)</label>
+                            <input type="number" class="form-control" id="quantity-processed">
+                        </div>
+                        <div class="mb-3">
+                            <label for="flow-rate" class="form-label">Portata (kg/h)</label>
+                            <input type="number" class="form-control" id="flow-rate" readonly>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                    <button type="button" class="btn btn-primary" id="btn-save-processing">Salva</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal per il messaggio di conferma -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">Conferma</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Sei sicuro di voler procedere al reparto Trasformazione?</p>
+                    <p>Questa è una versione di prototipo, il secondo reparto non è ancora stato implementato.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="button" class="btn btn-primary" id="btn-confirm-next">Procedi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dati di esempio per la simulazione
+        let silosData = {};
+        
+        $(document).ready(function() {
+            // Gestione selezione silos
+            $(".silos").click(function() {
+                $(this).toggleClass("selected");
+                updateSelectedSilos();
+            });
+            
+            // Aggiornamento campo silos selezionati
+            function updateSelectedSilos() {
+                let selected = [];
+                $(".silos.selected").each(function() {
+                    selected.push($(this).data("silos"));
+                });
+                $("#silos-selezionati").val(selected.join(", "));
+            }
+            
+            // Registrazione carico
+            $("#btn-registra").click(function() {
+                // Validazione base
+                let fornitore = $("#fornitore").val();
+                let tipologia = $("#tipologia").val();
+                let targa = $("#targa").val();
+                let pesoLordo = parseFloat($("#peso-lordo").val());
+                let pesoNetto = parseFloat($("#peso-netto").val());
+                let tipoAgrume = $("#tipo-agrume").val();
+                let varieta = $("#varieta").val();
+                let silosSelezionati = $("#silos-selezionati").val();
+                
+                if (!fornitore || !tipologia || !targa || isNaN(pesoLordo) || isNaN(pesoNetto) || 
+                    !tipoAgrume || !silosSelezionati) {
+                    alert("Compilare tutti i campi obbligatori");
+                    return;
+                }
+                
+                // Distribuzione peso nei silos selezionati
+                let silosArray = silosSelezionati.split(", ");
+                let pesoPerSilos = pesoNetto / silosArray.length;
+                
+                // Aggiungi dati ai silos
+                silosArray.forEach(silos => {
+                    silosData[silos] = {
+                        fornitore: fornitore,
+                        tipologia: tipologia,
+                        targa: targa,
+                        tipoAgrume: tipoAgrume,
+                        varieta: varieta,
+                        quantita: pesoPerSilos,
+                        stato: "In attesa",
+                        inizioLavorazione: null,
+                        fineLavorazione: null,
+                        portata: 0
+                    };
+                    
+                    // Aggiorna visualizzazione silos
+                    updateSilosVisual(silos);
+                });
+                
+                // Aggiorna tabella stato silos
+                updateSilosTable();
+                updateReportData();
+                
+                // Reset form e selezioni
+                resetForm();
+                
+                alert("Carico registrato con successo!");
+            });
+            
+            // Aggiornamento visuale silos
+            function updateSilosVisual(silosId) {
+                let silosElement = $(`.silos[data-silos="${silosId}"]`);
+                let silosContentElement = silosElement.find(".silos-content");
+                
+                silosElement.removeClass("empty partial full");
+                silosElement.addClass("partial");
+                
+                let data = silosData[silosId];
+                silosContentElement.html(`
+                    <span class="fruit-type">${data.tipoAgrume}</span><br>
+                    ${Math.round(data.quantita)} kg
+                `);
+                
+                // Aggiungi badge per stato
+                if (silosElement.find(".silos-badge").length === 0) {
+                    silosElement.append(`<span class="silos-badge">${data.stato === "In attesa" ? "A" : "L"}</span>`);
+                } else {
+                    silosElement.find(".silos-badge").text(data.stato === "In attesa" ? "A" : "L");
+                }
+            }
+            
+            // Aggiornamento tabella stato silos
+            function updateSilosTable() {
+                let tableBody = $("#silos-table tbody");
+                tableBody.empty();
+                
+                for (let silosId in silosData) {
+                    let data = silosData[silosId];
+                    let row = `
+                        <tr>
+                            <td>${silosId}</td>
+                            <td>${data.stato}</td>
+                            <td>${data.fornitore}</td>
+                            <td>${data.tipoAgrume}</td>
+                            <td>${data.varieta || "-"}</td>
+                            <td>${data.tipologia}</td>
+                            <td>${Math.round(data.quantita)} kg</td>
+                            <td>${data.inizioLavorazione || "-"}</td>
+                            <td>${data.fineLavorazione || "-"}</td>
+                            <td>${data.portata > 0 ? Math.round(data.portata) + " kg/h" : "-"}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary btn-process" data-silos="${silosId}">
+                                    ${data.stato === "In attesa" ? "Avvia" : "Modifica"} Lavorazione
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.append(row);
+                }
+                
+                // Aggiungi event listener per i pulsanti
+                $(".btn-process").click(function() {
+                    let silosId = $(this).data("silos");
+                    openProcessingModal(silosId);
+                });
+            }
+            
+            // Apertura modal per gestione lavorazione
+            function openProcessingModal(silosId) {
+                let data = silosData[silosId];
+                
+                $("#silos-id").val(silosId);
+                $("#silos-info").val(`${silosId} - ${data.tipoAgrume} (${Math.round(data.quantita)} kg)`);
+                
+                if (data.inizioLavorazione) {
+                    $("#start-time").val(data.inizioLavorazione);
+                } else {
+                    // Imposta l'ora corrente come ora di inizio predefinita
+                    let now = new Date();
+                    let formattedNow = now.toISOString().slice(0, 16);
+                    $("#start-time").val(formattedNow);
+                }
+                
+                if (data.fineLavorazione) {
+                    $("#end-time").val(data.fineLavorazione);
+                } else {
+                    $("#end-time").val("");
+                }
+                
+                if (data.portata > 0) {
+                    $("#quantity-processed").val(Math.round(data.quantita));
+                    $("#flow-rate").val(Math.round(data.portata));
+                } else {
+                    $("#quantity-processed").val(Math.round(data.quantita));
+                    $("#flow-rate").val("");
+                }
+                
+                // Mostra il modal
+                new bootstrap.Modal(document.getElementById('silosModal')).show();
+            }
+            
+            // Calcolo portata di lavorazione
+            function calculateFlowRate() {
+                let startTime = new Date($("#start-time").val());
+                let endTime = new Date($("#end-time").val());
+                let quantity = parseFloat($("#quantity-processed").val());
+                
+                if (!isNaN(startTime) && !isNaN(endTime) && !isNaN(quantity) && startTime < endTime) {
+                    let durationHours = (endTime - startTime) / (1000 * 60 * 60); // Durata in ore
+                    let flowRate = quantity / durationHours;
+                    $("#flow-rate").val(Math.round(flowRate));
+                } else {
+                    $("#flow-rate").val("");
+                }
+            }
+            
+            // Aggiornamento automatico della portata
+            $("#start-time, #end-time, #quantity-processed").change(function() {
+                calculateFlowRate();
+            });
+            
+            // Salvataggio dati lavorazione
+            $("#btn-save-processing").click(function() {
+                let silosId = $("#silos-id").val();
+                let startTime = $("#start-time").val();
+                let endTime = $("#end-time").val();
+                let quantity = parseFloat($("#quantity-processed").val());
+                let flowRate = parseFloat($("#flow-rate").val());
+                
+                if (!startTime || isNaN(quantity)) {
+                    alert("Inserire almeno l'orario di inizio e la quantità");
+                    return;
+                }
+                
+                // Aggiorna i dati del silos
+                silosData[silosId].inizioLavorazione = startTime;
+                silosData[silosId].fineLavorazione = endTime || null;
+                silosData[silosId].quantita = quantity;
+                silosData[silosId].portata = flowRate || 0;
+                silosData[silosId].stato = endTime ? "Completato" : "In lavorazione";
+                
+                // Aggiorna visualizzazione
+                updateSilosVisual(silosId);
+                updateSilosTable();
+                updateReportData();
+                
+                // Chiudi il modal
+                bootstrap.Modal.getInstance(document.getElementById('silosModal')).hide();
+                
+                alert("Dati lavorazione salvati con successo!");
+            });
+            
+            // Reset form
+            $("#btn-reset").click(function() {
+                resetForm();
+            });
+            
+            function resetForm() {
+                $("#reception-form")[0].reset();
+                $(".silos").removeClass("selected");
+                $("#silos-selezionati").val("");
+            }
+            
+            // Aggiornamento dati report
+            function updateReportData() {
+                // Calcoli statistiche
+                let totalStock = 0;
+                let inProcess = 0;
+                let waiting = 0;
+                let occupiedSilos = 0;
+                let supplierData = {};
+                let fruitData = {};
+                
+                for (let silosId in silosData) {
+                    let data = silosData[silosId];
+                    totalStock += data.quantita;
+                    occupiedSilos++;
+                    
+                    if (data.stato === "In lavorazione") {
+                        inProcess += data.quantita;
+                    } else if (data.stato === "In attesa") {
+                        waiting += data.quantita;
+                    }
+                    
+                    // Aggregazione per fornitore
+                    if (!supplierData[data.fornitore]) {
+                        supplierData[data.fornitore] = 0;
+                    }
+                    supplierData[data.fornitore] += data.quantita;
+                    
+                    // Aggregazione per tipo agrume
+                    if (!fruitData[data.tipoAgrume]) {
+                        fruitData[data.tipoAgrume] = 0;
+                    }
+                    fruitData[data.tipoAgrume] += data.quantita;
+                }
+                
+                // Aggiornamento valori
+                $("#total-stock").text(Math.round(totalStock) + " kg");
+                $("#occupied-silos").text(occupiedSilos + "/21");
+                $("#in-process").text(Math.round(inProcess) + " kg");
+                $("#waiting").text(Math.round(waiting) + " kg");
+                
+                // Aggiornamento tabelle
+                updateSupplierTable(supplierData);
+                updateFruitTable(fruitData);
+            }
+            
+            // Aggiornamento tabella fornitori
+            function updateSupplierTable(data) {
+                let tableBody = $("#supplier-table tbody");
+                tableBody.empty();
+                
+                for (let supplier in data) {
+                    let row = `
+                        <tr>
+                            <td>${supplier}</td>
+                            <td>${Math.round(data[supplier])} kg</td>
+                        </tr>
+                    `;
+                    tableBody.append(row);
+                }
+            }
+            
+            // Aggiornamento tabella tipi agrumi
+            function updateFruitTable(data) {
+                let tableBody = $("#fruit-table tbody");
+                tableBody.empty();
+                
+                for (let fruit in data) {
+                    let row = `
+                        <tr>
+                            <td>${fruit}</td>
+                            <td>${Math.round(data[fruit])} kg</td>
+                        </tr>
+                    `;
+                    tableBody.append(row);
+                }
+            }
+            
+            // Gestione pulsante prossimo reparto
+            $("#btn-next-dept").click(function() {
+                new bootstrap.Modal(document.getElementById('confirmModal')).show();
+            });
+            
+            $("#btn-confirm-next").click(function() {
+                alert("Implementazione del reparto 'Trasformazione' in corso di sviluppo.");
+                bootstrap.Modal.getInstance(document.getElementById('confirmModal')).hide();
+            });
+            
+            // Inizializzazione dati di esempio
+            function initDemoData() {
+                // Simulazione carico 1
+                silosData["A1"] = {
+                    fornitore: "Agrumi Sicilia S.r.l.",
+                    tipologia: "Convenzionale",
+                    targa: "AA123BB",
+                    tipoAgrume: "Arance rosse",
+                    varieta: "Tarocco",
+                    quantita: 8500,
+                    stato: "In lavorazione",
+                    inizioLavorazione: "2025-05-15T08:30",
+                    fineLavorazione: null,
+                    portata: 2125
+                };
+                
+                silosData["A2"] = {
+                    fornitore: "Agrumi Sicilia S.r.l.",
+                    tipologia: "Convenzionale",
+                    targa: "AA123BB",
+                    tipoAgrume: "Arance rosse",
+                    varieta: "Tarocco",
+                    quantita: 8500,
+                    stato: "In attesa",
+                    inizioLavorazione: null,
+                    fineLavorazione: null,
+                    portata: 0
+                };
+                
+                // Simulazione carico 2
+                silosData["B3"] = {
+                    fornitore: "Limoni Catania",
+                    tipologia: "Bio EU",
+                    targa: "CC456DD",
+                    tipoAgrume: "Limoni",
+                    varieta: "Verdello",
+                    quantita: 6200,
+                    stato: "In attesa",
+                    inizioLavorazione: null,
+                    fineLavorazione: null,
+                    portata: 0
+                };
+                
+                // Simulazione carico 3
+                silosData["C1"] = {
+                    fornitore: "Mandarini Etna",
+                    tipologia: "IGP",
+                    targa: "EE789FF",
+                    tipoAgrume: "Mandarini",
+                    varieta: "Ciaculli",
+                    quantita: 7800,
+                    stato: "Completato",
+                    inizioLavorazione: "2025-05-14T14:00",
+                    fineLavorazione: "2025-05-14T18:30",
+                    portata: 1733
+                };
+                
+                // Aggiorna visualizzazione
+                for (let silosId in silosData) {
+                    updateSilosVisual(silosId);
+                }
+                
+                updateSilosTable();
+                updateReportData();
+            }
+            
+            // Inizializza con dati di esempio
+            initDemoData();
+        });
+    </script>
 </body>
 </html>
