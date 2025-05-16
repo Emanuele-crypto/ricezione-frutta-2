@@ -9,933 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-        }
-        .header {
-            background-color: #28a745;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-            border-radius: 0 0 10px 10px;
-        }
-        .dashboard-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
-        .form-section {
-            margin-bottom: 30px;
-            padding: 20px;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            background-color: #f8f9fa;
-        }
-        .silos-status {
-            margin-top: 30px;
-        }
-        .silos-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .silos {
-            padding: 15px;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-        }
-        .silos:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        .silos.selected {
-            background-color: #d4edda;
-            border-color: #28a745;
-        }
-        .silos.empty {
-            background-color: #f8f9fa;
-        }
-        .silos.partial {
-            background-color: #fff3cd;
-        }
-        .silos.full {
-            background-color: #f8d7da;
-        }
-        .silos-label {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .nav-tabs {
-            margin-bottom: 20px;
-        }
-        .table-responsive {
-            margin-top: 20px;
-        }
-        .btn-section {
-            margin-top: 30px;
-            text-align: right;
-        }
-        .silos-content {
-            font-size: 12px;
-            margin-top: 5px;
-        }
-        .silos-badge {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            padding: 2px 5px;
-            border-radius: 50%;
-            font-size: 10px;
-            color: white;
-            background-color: #6c757d;
-        }
-        .fruit-type {
-            display: inline-block;
-            padding: 4px;
-            border-radius: 3px;
-            font-size: 10px;
-            margin-top: 3px;
-            background-color: #e9ecef;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>Sistema Gestione Trasformazione Agrumi</h1>
-        <h3>Reparto 1: Ricezione Frutta</h3>
-    </div>
-
-    <div class="dashboard-container">
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="inserimento-tab" data-bs-toggle="tab" data-bs-target="#inserimento" type="button" role="tab" aria-controls="inserimento" aria-selected="true">Inserimento Dati</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="stato-silos-tab" data-bs-toggle="tab" data-bs-target="#stato-silos" type="button" role="tab" aria-controls="stato-silos" aria-selected="false">Stato Silos</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="report-tab" data-bs-toggle="tab" data-bs-target="#report" type="button" role="tab" aria-controls="report" aria-selected="false">Report Giacenze</button>
-            </li>
-        </ul>
-
-        <div class="tab-content" id="myTabContent">
-            <!-- TAB INSERIMENTO DATI -->
-            <div class="tab-pane fade show active" id="inserimento" role="tabpanel" aria-labelledby="inserimento-tab">
-                <h4 class="mb-3">Inserimento Dati Ricezione</h4>
-                
-                <form id="reception-form">
-                    <div class="form-section">
-                        <h5>Dati Fornitore e Trasporto</h5>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="fornitore" class="form-label">Nome Fornitore</label>
-                                <input type="text" class="form-control" id="fornitore" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="tipologia" class="form-label">Tipologia</label>
-                                <select class="form-select" id="tipologia" required>
-                                    <option value="">Seleziona tipologia</option>
-                                    <option value="Convenzionale">Convenzionale</option>
-                                    <option value="Bio EU">Bio EU</option>
-                                    <option value="Bio NTD">Bio NTD</option>
-                                    <option value="Bio DEM">Bio DEM</option>
-                                    <option value="IGP">IGP</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="targa" class="form-label">Targa</label>
-                                <input type="text" class="form-control" id="targa" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="peso-lordo" class="form-label">Peso Lordo (kg)</label>
-                                <input type="number" class="form-control" id="peso-lordo" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="peso-netto" class="form-label">Peso Netto (kg)</label>
-                                <input type="number" class="form-control" id="peso-netto" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h5>Dati Prodotto</h5>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="tipo-agrume" class="form-label">Tipo di Agrume</label>
-                                <select class="form-select" id="tipo-agrume" required>
-                                    <option value="">Seleziona tipo</option>
-                                    <option value="Arance bionde">Arance bionde</option>
-                                    <option value="Arance rosse">Arance rosse</option>
-                                    <option value="Limoni">Limoni</option>
-                                    <option value="Mandarini">Mandarini</option>
-                                    <option value="Bergamotti">Bergamotti</option>
-                                    <option value="Pompelmi">Pompelmi</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="varieta" class="form-label">Varietà</label>
-                                <select class="form-select" id="varieta">
-                                    <option value="">Seleziona varietà</option>
-                                    <option value="Ciaculli">Ciaculli</option>
-                                    <option value="Moro">Moro</option>
-                                    <option value="Tarocco">Tarocco</option>
-                                    <option value="Verdello">Verdello</option>
-                                    <option value="Bianchetto">Bianchetto</option>
-                                    <option value="Sanguinello">Sanguinello</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h5>Destinazione Stoccaggio</h5>
-                        <p>Seleziona i silos di destinazione</p>
-                        
-                        <div class="row g-3 mb-3">
-                            <div class="col-12">
-                                <h6>Linea A</h6>
-                                <div class="silos-grid" id="lineaA">
-                                    <div class="silos" data-silos="A1">
-                                        <div class="silos-label">A1</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                    <div class="silos" data-silos="A2">
-                                        <div class="silos-label">A2</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                    <div class="silos" data-silos="A3">
-                                        <div class="silos-label">A3</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                    <div class="silos" data-silos="A4">
-                                        <div class="silos-label">A4</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                    <div class="silos" data-silos="A5">
-                                        <div class="silos-label">A5</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                    <div class="silos" data-silos="A6">
-                                        <div class="silos-label">A6</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                    <div class="silos" data-silos="A7">
-                                        <div class="silos-label">A7</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-12">
-                                <h6>Linea B</h6>
-                                <div class="silos-grid" id="lineaB">
-                                    <div class="silos" data-silos="B1">
-                                        <div class="silos-label">B1</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                    <div class="silos" data-silos="B2">
-                                        <div class="silos-label">B2</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                    <div class="silos" data-silos="B3">
-                                        <div class="silos-label">B3</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                    <div class="silos" data-silos="B4">
-                                        <div class="silos-label">B4</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                    <div class="silos" data-silos="B5">
-                                        <div class="silos-label">B5</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                    <div class="silos" data-silos="B6">
-                                        <div class="silos-label">B6</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                    <div class="silos" data-silos="B7">
-                                        <div class="silos-label">B7</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-12">
-                                <h6>Linea C</h6>
-                                <div class="silos-grid" id="lineaC">
-                                    <div class="silos" data-silos="C1">
-                                        <div class="silos-label">C1</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                    <div class="silos" data-silos="C2">
-                                        <div class="silos-label">C2</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                    <div class="silos" data-silos="C3">
-                                        <div class="silos-label">C3</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                    <div class="silos" data-silos="C4">
-                                        <div class="silos-label">C4</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                    <div class="silos" data-silos="C5">
-                                        <div class="silos-label">C5</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                    <div class="silos" data-silos="C6">
-                                        <div class="silos-label">C6</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                    <div class="silos" data-silos="C7">
-                                        <div class="silos-label">C7</div>
-                                        <div class="silos-content"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row g-3">
-                            <div class="col-md-12">
-                                <label class="form-label">Silos selezionati</label>
-                                <input type="text" class="form-control" id="silos-selezionati" readonly>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <button type="button" class="btn btn-primary" id="btn-registra">Registra Carico</button>
-                            <button type="button" class="btn btn-secondary" id="btn-reset">Reset Form</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            
-            <!-- TAB STATO SILOS -->
-            <div class="tab-pane fade" id="stato-silos" role="tabpanel" aria-labelledby="stato-silos-tab">
-                <h4 class="mb-3">Stato Silos e Lavorazione</h4>
-                
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover" id="silos-table">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Silos</th>
-                                <th>Stato</th>
-                                <th>Fornitore</th>
-                                <th>Tipo Agrume</th>
-                                <th>Varietà</th>
-                                <th>Tipologia</th>
-                                <th>Quantità (kg)</th>
-                                <th>Inizio Lavorazione</th>
-                                <th>Fine Lavorazione</th>
-                                <th>Portata (kg/h)</th>
-                                <th>Azioni</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- I dati dei silos verranno inseriti dinamicamente qui -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- TAB REPORT -->
-            <div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report-tab">
-                <h4 class="mb-3">Report Giacenze</h4>
-                
-                <div class="row mb-4">
-                    <div class="col-md-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Totale Frutta in Giacenza</h5>
-                                <h3 class="card-text" id="total-stock">0 kg</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Silos Occupati</h5>
-                                <h3 class="card-text" id="occupied-silos">0/21</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">In Lavorazione</h5>
-                                <h3 class="card-text" id="in-process">0 kg</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">In Attesa</h5>
-                                <h3 class="card-text" id="waiting">0 kg</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <h5>Giacenze per Fornitore</h5>
-                        <div class="table-responsive">
-                            <table class="table table-striped" id="supplier-table">
-                                <thead>
-                                    <tr>
-                                        <th>Fornitore</th>
-                                        <th>Quantità (kg)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Dati dinamici -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <h5>Giacenze per Tipo di Agrume</h5>
-                        <div class="table-responsive">
-                            <table class="table table-striped" id="fruit-table">
-                                <thead>
-                                    <tr>
-                                        <th>Tipo Agrume</th>
-                                        <th>Quantità (kg)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Dati dinamici -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="btn-section">
-            <button type="button" class="btn btn-success btn-lg" id="btn-next-dept">Vai al Reparto Trasformazione</button>
-        </div>
-    </div>
-
-    <!-- Modal per gestione lavorazione silos -->
-    <div class="modal fade" id="silosModal" tabindex="-1" aria-labelledby="silosModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="silosModalLabel">Gestione Lavorazione Silos</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="processing-form">
-                        <input type="hidden" id="silos-id">
-                        <div class="mb-3">
-                            <label for="silos-info" class="form-label">Silos</label>
-                            <input type="text" class="form-control" id="silos-info" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="start-time" class="form-label">Inizio Lavorazione</label>
-                            <input type="datetime-local" class="form-control" id="start-time">
-                        </div>
-                        <div class="mb-3">
-                            <label for="end-time" class="form-label">Fine Lavorazione</label>
-                            <input type="datetime-local" class="form-control" id="end-time">
-                        </div>
-                        <div class="mb-3">
-                            <label for="quantity-processed" class="form-label">Quantità Lavorata (kg)</label>
-                            <input type="number" class="form-control" id="quantity-processed">
-                        </div>
-                        <div class="mb-3">
-                            <label for="flow-rate" class="form-label">Portata (kg/h)</label>
-                            <input type="number" class="form-control" id="flow-rate" readonly>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
-                    <button type="button" class="btn btn-primary" id="btn-save-processing">Salva</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal per il messaggio di conferma -->
-    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmModalLabel">Conferma</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Sei sicuro di voler procedere al reparto Trasformazione?</p>
-                    <p>Questa è una versione di prototipo, il secondo reparto non è ancora stato implementato.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                    <button type="button" class="btn btn-primary" id="btn-confirm-next">Procedi</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Dati di esempio per la simulazione
-        let silosData = {};
-        
-        $(document).ready(function() {
-            // Gestione selezione silos
-            $(".silos").click(function() {
-                $(this).toggleClass("selected");
-                updateSelectedSilos();
-            });
-            
-            // Aggiornamento campo silos selezionati
-            function updateSelectedSilos() {
-                let selected = [];
-                $(".silos.selected").each(function() {
-                    selected.push($(this).data("silos"));
-                });
-                $("#silos-selezionati").val(selected.join(", "));
-            }
-            
-            // Registrazione carico
-            $("#btn-registra").click(function() {
-                // Validazione base
-                let fornitore = $("#fornitore").val();
-                let tipologia = $("#tipologia").val();
-                let targa = $("#targa").val();
-                let pesoLordo = parseFloat($("#peso-lordo").val());
-                let pesoNetto = parseFloat($("#peso-netto").val());
-                let tipoAgrume = $("#tipo-agrume").val();
-                let varieta = $("#varieta").val();
-                let silosSelezionati = $("#silos-selezionati").val();
-                
-                if (!fornitore || !tipologia || !targa || isNaN(pesoLordo) || isNaN(pesoNetto) || 
-                    !tipoAgrume || !silosSelezionati) {
-                    alert("Compilare tutti i campi obbligatori");
-                    return;
-                }
-                
-                // Distribuzione peso nei silos selezionati
-                let silosArray = silosSelezionati.split(", ");
-                let pesoPerSilos = pesoNetto / silosArray.length;
-                
-                // Aggiungi dati ai silos
-                silosArray.forEach(silos => {
-                    silosData[silos] = {
-                        fornitore: fornitore,
-                        tipologia: tipologia,
-                        targa: targa,
-                        tipoAgrume: tipoAgrume,
-                        varieta: varieta,
-                        quantita: pesoPerSilos,
-                        stato: "In attesa",
-                        inizioLavorazione: null,
-                        fineLavorazione: null,
-                        portata: 0
-                    };
-                    
-                    // Aggiorna visualizzazione silos
-                    updateSilosVisual(silos);
-                });
-                
-                // Aggiorna tabella stato silos
-                updateSilosTable();
-                updateReportData();
-                
-                // Reset form e selezioni
-                resetForm();
-                
-                alert("Carico registrato con successo!");
-            });
-            
-            // Aggiornamento visuale silos
-            function updateSilosVisual(silosId) {
-                let silosElement = $(`.silos[data-silos="${silosId}"]`);
-                let silosContentElement = silosElement.find(".silos-content");
-                
-                silosElement.removeClass("empty partial full");
-                silosElement.addClass("partial");
-                
-                let data = silosData[silosId];
-                silosContentElement.html(`
-                    <span class="fruit-type">${data.tipoAgrume}</span><br>
-                    ${Math.round(data.quantita)} kg
-                `);
-                
-                // Aggiungi badge per stato
-                if (silosElement.find(".silos-badge").length === 0) {
-                    silosElement.append(`<span class="silos-badge">${data.stato === "In attesa" ? "A" : "L"}</span>`);
-                } else {
-                    silosElement.find(".silos-badge").text(data.stato === "In attesa" ? "A" : "L");
-                }
-            }
-            
-            // Aggiornamento tabella stato silos
-            function updateSilosTable() {
-                let tableBody = $("#silos-table tbody");
-                tableBody.empty();
-                
-                for (let silosId in silosData) {
-                    let data = silosData[silosId];
-                    let row = `
-                        <tr>
-                            <td>${silosId}</td>
-                            <td>${data.stato}</td>
-                            <td>${data.fornitore}</td>
-                            <td>${data.tipoAgrume}</td>
-                            <td>${data.varieta || "-"}</td>
-                            <td>${data.tipologia}</td>
-                            <td>${Math.round(data.quantita)} kg</td>
-                            <td>${data.inizioLavorazione || "-"}</td>
-                            <td>${data.fineLavorazione || "-"}</td>
-                            <td>${data.portata > 0 ? Math.round(data.portata) + " kg/h" : "-"}</td>
-                            <td>
-                                <button class="btn btn-sm btn-primary btn-process" data-silos="${silosId}">
-                                    ${data.stato === "In attesa" ? "Avvia" : "Modifica"} Lavorazione
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                    tableBody.append(row);
-                }
-                
-                // Aggiungi event listener per i pulsanti
-                $(".btn-process").click(function() {
-                    let silosId = $(this).data("silos");
-                    openProcessingModal(silosId);
-                });
-            }
-            
-            // Apertura modal per gestione lavorazione
-            function openProcessingModal(silosId) {
-                let data = silosData[silosId];
-                
-                $("#silos-id").val(silosId);
-                $("#silos-info").val(`${silosId} - ${data.tipoAgrume} (${Math.round(data.quantita)} kg)`);
-                
-                if (data.inizioLavorazione) {
-                    $("#start-time").val(data.inizioLavorazione);
-                } else {
-                    // Imposta l'ora corrente come ora di inizio predefinita
-                    let now = new Date();
-                    let formattedNow = now.toISOString().slice(0, 16);
-                    $("#start-time").val(formattedNow);
-                }
-                
-                if (data.fineLavorazione) {
-                    $("#end-time").val(data.fineLavorazione);
-                } else {
-                    $("#end-time").val("");
-                }
-                
-                if (data.portata > 0) {
-                    $("#quantity-processed").val(Math.round(data.quantita));
-                    $("#flow-rate").val(Math.round(data.portata));
-                } else {
-                    $("#quantity-processed").val(Math.round(data.quantita));
-                    $("#flow-rate").val("");
-                }
-                
-                // Mostra il modal
-                new bootstrap.Modal(document.getElementById('silosModal')).show();
-            }
-            
-            // Calcolo portata di lavorazione
-            function calculateFlowRate() {
-                let startTime = new Date($("#start-time").val());
-                let endTime = new Date($("#end-time").val());
-                let quantity = parseFloat($("#quantity-processed").val());
-                
-                if (!isNaN(startTime) && !isNaN(endTime) && !isNaN(quantity) && startTime < endTime) {
-                    let durationHours = (endTime - startTime) / (1000 * 60 * 60); // Durata in ore
-                    let flowRate = quantity / durationHours;
-                    $("#flow-rate").val(Math.round(flowRate));
-                } else {
-                    $("#flow-rate").val("");
-                }
-            }
-            
-            // Aggiornamento automatico della portata
-            $("#start-time, #end-time, #quantity-processed").change(function() {
-                calculateFlowRate();
-            });
-            
-            // Salvataggio dati lavorazione
-            $("#btn-save-processing").click(function() {
-                let silosId = $("#silos-id").val();
-                let startTime = $("#start-time").val();
-                let endTime = $("#end-time").val();
-                let quantity = parseFloat($("#quantity-processed").val());
-                let flowRate = parseFloat($("#flow-rate").val());
-                
-                if (!startTime || isNaN(quantity)) {
-                    alert("Inserire almeno l'orario di inizio e la quantità");
-                    return;
-                }
-                
-                // Aggiorna i dati del silos
-                silosData[silosId].inizioLavorazione = startTime;
-                silosData[silosId].fineLavorazione = endTime || null;
-                silosData[silosId].quantita = quantity;
-                silosData[silosId].portata = flowRate || 0;
-                silosData[silosId].stato = endTime ? "Completato" : "In lavorazione";
-                
-                // Aggiorna visualizzazione
-                updateSilosVisual(silosId);
-                updateSilosTable();
-                updateReportData();
-                
-                // Chiudi il modal
-                bootstrap.Modal.getInstance(document.getElementById('silosModal')).hide();
-                
-                alert("Dati lavorazione salvati con successo!");
-            });
-            
-            // Reset form
-            $("#btn-reset").click(function() {
-                resetForm();
-            });
-            
-            function resetForm() {
-                $("#reception-form")[0].reset();
-                $(".silos").removeClass("selected");
-                $("#silos-selezionati").val("");
-            }
-            
-            // Aggiornamento dati report
-            function updateReportData() {
-                // Calcoli statistiche
-                let totalStock = 0;
-                let inProcess = 0;
-                let waiting = 0;
-                let occupiedSilos = 0;
-                let supplierData = {};
-                let fruitData = {};
-                
-                for (let silosId in silosData) {
-                    let data = silosData[silosId];
-                    totalStock += data.quantita;
-                    occupiedSilos++;
-                    
-                    if (data.stato === "In lavorazione") {
-                        inProcess += data.quantita;
-                    } else if (data.stato === "In attesa") {
-                        waiting += data.quantita;
-                    }
-                    
-                    // Aggregazione per fornitore
-                    if (!supplierData[data.fornitore]) {
-                        supplierData[data.fornitore] = 0;
-                    }
-                    supplierData[data.fornitore] += data.quantita;
-                    
-                    // Aggregazione per tipo agrume
-                    if (!fruitData[data.tipoAgrume]) {
-                        fruitData[data.tipoAgrume] = 0;
-                    }
-                    fruitData[data.tipoAgrume] += data.quantita;
-                }
-                
-                // Aggiornamento valori
-                $("#total-stock").text(Math.round(totalStock) + " kg");
-                $("#occupied-silos").text(occupiedSilos + "/21");
-                $("#in-process").text(Math.round(inProcess) + " kg");
-                $("#waiting").text(Math.round(waiting) + " kg");
-                
-                // Aggiornamento tabelle
-                updateSupplierTable(supplierData);
-                updateFruitTable(fruitData);
-            }
-            
-            // Aggiornamento tabella fornitori
-            function updateSupplierTable(data) {
-                let tableBody = $("#supplier-table tbody");
-                tableBody.empty();
-                
-                for (let supplier in data) {
-                    let row = `
-                        <tr>
-                            <td>${supplier}</td>
-                            <td>${Math.round(data[supplier])} kg</td>
-                        </tr>
-                    `;
-                    tableBody.append(row);
-                }
-            }
-            
-            // Aggiornamento tabella tipi agrumi
-            function updateFruitTable(data) {
-                let tableBody = $("#fruit-table tbody");
-                tableBody.empty();
-                
-                for (let fruit in data) {
-                    let row = `
-                        <tr>
-                            <td>${fruit}</td>
-                            <td>${Math.round(data[fruit])} kg</td>
-                        </tr>
-                    `;
-                    tableBody.append(row);
-                }
-            }
-            
-            // Gestione pulsante prossimo reparto
-            $("#btn-next-dept").click(function() {
-                new bootstrap.Modal(document.getElementById('confirmModal')).show();
-            });
-            
-            $("#btn-confirm-next").click(function() {
-                alert("Implementazione del reparto 'Trasformazione' in corso di sviluppo.");
-                bootstrap.Modal.getInstance(document.getElementById('confirmModal')).hide();
-            });
-            
-            // Inizializzazione dati di esempio
-            function initDemoData() {
-                // Simulazione carico 1
-                silosData["A1"] = {
-                    fornitore: "Agrumi Sicilia S.r.l.",
-                    tipologia: "Convenzionale",
-                    targa: "AA123BB",
-                    tipoAgrume: "Arance rosse",
-                    varieta: "Tarocco",
-                    quantita: 8500,
-                    stato: "In lavorazione",
-                    inizioLavorazione: "2025-05-15T08:30",
-                    fineLavorazione: null,
-                    portata: 2125
-                };
-                
-                silosData["A2"] = {
-                    fornitore: "Agrumi Sicilia S.r.l.",
-                    tipologia: "Convenzionale",
-                    targa: "AA123BB",
-                    tipoAgrume: "Arance rosse",
-                    varieta: "Tarocco",
-                    quantita: 8500,
-                    stato: "In attesa",
-                    inizioLavorazione: null,
-                    fineLavorazione: null,
-                    portata: 0
-                };
-                
-                // Simulazione carico 2
-                silosData["B3"] = {
-                    fornitore: "Limoni Catania",
-                    tipologia: "Bio EU",
-                    targa: "CC456DD",
-                    tipoAgrume: "Limoni",
-                    varieta: "Verdello",
-                    quantita: 6200,
-                    stato: "In attesa",
-                    inizioLavorazione: null,
-                    fineLavorazione: null,
-                    portata: 0
-                };
-                
-                // Simulazione carico 3
-                silosData["C1"] = {
-                    fornitore: "Mandarini Etna",
-                    tipologia: "IGP",
-                    targa: "EE789FF",
-                    tipoAgrume: "Mandarini",
-                    varieta: "Ciaculli",
-                    quantita: 7800,
-                    stato: "Completato",
-                    inizioLavorazione: "2025-05-14T14:00",
-                    fineLavorazione: "2025-05-14T18:30",
-                    portata: 1733
-                };
-                
-                // Aggiorna visualizzazione
-                for (let silosId in silosData) {
-                    updateSilosVisual(silosId);
-                }
-                
-                updateSilosTable();
-                updateReportData();
-            }
-            
-           // Inizializzazione dati di esempio
-            function initDemoData() {
-                // Simulazione carico 1
-                silosData["A1"] = {
-                    fornitore: "Agrumi Sicilia S.r.l.",
-                    tipologia: "Convenzionale",
-                    targa: "AA123BB",
-                    tipoAgrume: "Arance rosse",
-                    varieta: "Tarocco",
-                    quantita: 6500,
-                    stato: "In lavorazione",
-                    inizioLavorazione: "2025-05-15T08:30",
-                    fineLavorazione: null,
-                    portata: 2125
-                };
-                
-                silosData["A2"] = {
-                    fornitore: "Agrumi Sicilia S.r.l.",
-                    tipologia: "Convenzionale",
-                    targa: "AA123BB",
-                    tipoAgrume: "Arance rosse",
-                    varieta: "Tarocco",
-                    quantita: 6500,
-                    stato: "In attesa",
-                    inizioLavorazione: null,
-                    fineLavorazione: null,
-                    portata: 0
-                };
-                
-                // Simulazione carico 2
-                silosData["B3"] = {
-                    fornitore: "Limoni Catania",
-                    tipologia: "Bio EU",
-                    targa: "CC456DD",
-                    tipoAgrume: "Limoni",
-                    varieta: "Verdello",
-                    quantita: 6000,
-                    stato: "In attesa",
-                    inizioLavorazione: null,
-                    fineLavorazione: null,
-                    portata: 0
-                };
-                
-                // Simulazione carico 3
-                silosData["C1"] = {
-                    fornitore: "Mandarini Etna",
-                    tipologia: "IGP",
-                    targa: "EE789FF",
-                    tipoAgrume: "Mandarini",
-                    varieta: "Ciaculli",
-                    quantita: 7000,
-                    stato: "Completato",
-                    inizioLavorazione: "2025-05-14T14:00",
-                    fineLavorazione: "2025-05-14T18:30",
-                    <!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Gestione Aziendale - Trasformazione Agrumi</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -1105,7 +179,7 @@
                     <div class="form-section">
                         <h5>Dati Prodotto</h5>
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="tipo-agrume" class="form-label">Tipo di Agrume</label>
                                 <select class="form-select" id="tipo-agrume" required>
                                     <option value="">Seleziona tipo</option>
@@ -1117,7 +191,7 @@
                                     <option value="Pompelmi">Pompelmi</option>
                                 </select>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="varieta" class="form-label">Varietà</label>
                                 <select class="form-select" id="varieta">
                                     <option value="">Seleziona varietà</option>
@@ -1129,10 +203,17 @@
                                     <option value="Sanguinello">Sanguinello</option>
                                 </select>
                             </div>
+                            <div class="col-md-4">
+                                <label for="modo-scarico" class="form-label">Modalità di Scarico</label>
+                                <select class="form-select" id="modo-scarico">
+                                    <option value="singolo">Scarico Completo</option>
+                                    <option value="multiplo">Scarico a Lotti</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-section">
+                    <div class="form-section" id="scarico-completo">
                         <h5>Destinazione Stoccaggio</h5>
                         <p>Seleziona i silos di destinazione</p>
                         
@@ -1268,6 +349,69 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Sezione per scarico a lotti -->
+                    <div class="form-section" id="scarico-lotti" style="display: none;">
+                        <h5>Scarico a Lotti</h5>
+                        <p>Inserisci i dettagli dei lotti da scaricare in diverse linee e silos</p>
+                        
+                        <div id="lotti-container">
+                            <div class="lotto-item mb-4 p-3 border rounded">
+                                <h6>Lotto 1</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Peso del lotto (kg)</label>
+                                        <input type="number" class="form-control lotto-peso" placeholder="Inserisci peso">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Linea di destinazione</label>
+                                        <select class="form-select lotto-linea">
+                                            <option value="">Seleziona linea</option>
+                                            <option value="A">Linea A</option>
+                                            <option value="B">Linea B</option>
+                                            <option value="C">Linea C</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">Silos di destinazione</label>
+                                        <div class="lotto-silos-container" style="display: none;">
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-outline-secondary lotto-silos" data-silos="1">1</button>
+                                                <button type="button" class="btn btn-outline-secondary lotto-silos" data-silos="2">2</button>
+                                                <button type="button" class="btn btn-outline-secondary lotto-silos" data-silos="3">3</button>
+                                                <button type="button" class="btn btn-outline-secondary lotto-silos" data-silos="4">4</button>
+                                                <button type="button" class="btn btn-outline-secondary lotto-silos" data-silos="5">5</button>
+                                                <button type="button" class="btn btn-outline-secondary lotto-silos" data-silos="6">6</button>
+                                                <button type="button" class="btn btn-outline-secondary lotto-silos" data-silos="7">7</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <input type="text" class="form-control lotto-silos-selected" placeholder="Silos selezionati" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <button type="button" class="btn btn-outline-success" id="btn-add-lotto">
+                                    <i class="bi bi-plus-circle"></i> Aggiungi Lotto
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Peso totale assegnato</label>
+                                <input type="text" class="form-control" id="peso-assegnato" readonly value="0 kg">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Peso rimanente</label>
+                                <input type="text" class="form-control" id="peso-rimanente" readonly value="0 kg">
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="row mt-4">
                         <div class="col-12">
@@ -1354,6 +498,7 @@
                                     <tr>
                                         <th>Fornitore</th>
                                         <th>Quantità (kg)</th>
+                                        <th>Linee</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1453,17 +598,29 @@
         let silosData = {};
         
         $(document).ready(function() {
-            // Gestione selezione silos
-            $(".silos").click(function() {
-                if (!$(this).hasClass("full")) {
-                    $(this).toggleClass("selected");
-                    updateSelectedSilos();
-                } else {
-                    alert("Attenzione: questo silos è pieno (7000 kg). Selezionare un altro silos.");
+            // CORREZIONE: Gestione selezione silos
+            $(".silos").off("click").click(function() {
+                // Verifica se il silos è pieno
+                let silosId = $(this).data("silos");
+                let isFull = false;
+                
+                if (silosData[silosId] && silosData[silosId].quantita >= 7000) {
+                    isFull = true;
                 }
+                
+                if (isFull) {
+                    alert("Attenzione: questo silos è pieno (7000 kg). Selezionare un altro silos.");
+                    return;
+                }
+                
+                // Toggle della classe selected
+                $(this).toggleClass("selected");
+                
+                // Aggiornamento campo dei silos selezionati
+                updateSelectedSilos();
             });
             
-            // Aggiornamento campo silos selezionati
+            // Funzione per aggiornare il campo silos selezionati
             function updateSelectedSilos() {
                 let selected = [];
                 $(".silos.selected").each(function() {
@@ -1501,8 +658,158 @@
                 }
             });
             
-            // Registrazione carico
-            $("#btn-registra").click(function() {
+            // Gestione modalità scarico
+            $("#modo-scarico").change(function() {
+                let modo = $(this).val();
+                if (modo === "singolo") {
+                    $("#scarico-completo").show();
+                    $("#scarico-lotti").hide();
+                } else {
+                    $("#scarico-completo").hide();
+                    $("#scarico-lotti").show();
+                    
+                    // Aggiorna il peso rimanente
+                    let pesoNetto = parseFloat($("#peso-netto").val()) || 0;
+                    $("#peso-rimanente").val(pesoNetto + " kg");
+                }
+            });
+            
+            // Gestione selezione linea nei lotti
+            $(document).on("change", ".lotto-linea", function() {
+                let linea = $(this).val();
+                let lottoItem = $(this).closest(".lotto-item");
+                let silosContainer = lottoItem.find(".lotto-silos-container");
+                
+                if (linea) {
+                    silosContainer.show();
+                    // Aggiorna label dei pulsanti silos
+                    silosContainer.find(".lotto-silos").each(function(index) {
+                        $(this).text(index + 1);
+                        $(this).data("silos", linea + (index + 1));
+                        
+                        // Verifica se il silos è pieno
+                        let silosId = linea + (index + 1);
+                        if (silosData[silosId] && silosData[silosId].quantita >= 7000) {
+                            $(this).addClass("disabled").prop("disabled", true);
+                        } else {
+                            $(this).removeClass("disabled").prop("disabled", false);
+                        }
+                    });
+                } else {
+                    silosContainer.hide();
+                }
+                
+                // Reset selezione silos
+                lottoItem.find(".lotto-silos").removeClass("active btn-primary").addClass("btn-outline-secondary");
+                lottoItem.find(".lotto-silos-selected").val("");
+            });
+            
+            // Gestione selezione silos nei lotti
+            $(document).on("click", ".lotto-silos", function() {
+                if ($(this).hasClass("disabled")) return;
+                
+                $(this).toggleClass("active btn-primary btn-outline-secondary");
+                
+                // Aggiorna campo silos selezionati
+                let lottoItem = $(this).closest(".lotto-item");
+                let silosSelezionati = [];
+                
+                lottoItem.find(".lotto-silos.active").each(function() {
+                    silosSelezionati.push($(this).data("silos"));
+                });
+                
+                lottoItem.find(".lotto-silos-selected").val(silosSelezionati.join(", "));
+            });
+            
+            // Aggiunta nuovo lotto
+            $("#btn-add-lotto").click(function() {
+                let lottiCount = $(".lotto-item").length;
+                let newLottoHtml = `
+                    <div class="lotto-item mb-4 p-3 border rounded">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6>Lotto ${lottiCount + 1}</h6>
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-remove-lotto">
+                                <i class="bi bi-trash"></i> Rimuovi
+                            </button>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Peso del lotto (kg)</label>
+                                <input type="number" class="form-control lotto-peso" placeholder="Inserisci peso">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Linea di destinazione</label>
+                                <select class="form-select lotto-linea">
+                                    <option value="">Seleziona linea</option>
+                                    <option value="A">Linea A</option>
+                                    <option value="B">Linea B</option>
+                                    <option value="C">Linea C</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Silos di destinazione</label>
+                                <div class="lotto-silos-container" style="display: none;">
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-outline-secondary lotto-silos" data-silos="1">1</button>
+                                        <button type="button" class="btn btn-outline-secondary lotto-silos" data-silos="2">2</button>
+                                        <button type="button" class="btn btn-outline-secondary lotto-silos" data-silos="3">3</button>
+                                        <button type="button" class="btn btn-outline-secondary lotto-silos" data-silos="4">4</button>
+                                        <button type="button" class="btn btn-outline-secondary lotto-silos" data-silos="5">5</button>
+                                        <button type="button" class="btn btn-outline-secondary lotto-silos" data-silos="6">6</button>
+                                        <button type="button" class="btn btn-outline-secondary lotto-silos" data-silos="7">7</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <input type="text" class="form-control lotto-silos-selected" placeholder="Silos selezionati" readonly>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                $("#lotti-container").append(newLottoHtml);
+                updateLottiCalculations();
+            });
+            
+            // Rimozione lotto
+            $(document).on("click", ".btn-remove-lotto", function() {
+                $(this).closest(".lotto-item").remove();
+                
+                // Rinumera i lotti
+                $(".lotto-item").each(function(index) {
+                    $(this).find("h6").text("Lotto " + (index + 1));
+                });
+                
+                updateLottiCalculations();
+            });
+            
+            // Aggiornamento calcoli pesi lotti
+            $(document).on("input", ".lotto-peso", function() {
+                updateLottiCalculations();
+            });
+            
+            function updateLottiCalculations() {
+                let pesoNetto = parseFloat($("#peso-netto").val()) || 0;
+                let pesoAssegnato = 0;
+                
+                $(".lotto-peso").each(function() {
+                    let lottoWeight = parseFloat($(this).val()) || 0;
+                    pesoAssegnato += lottoWeight;
+                });
+                
+                $("#peso-assegnato").val(Math.round(pesoAssegnato) + " kg");
+                $("#peso-rimanente").val(Math.round(pesoNetto - pesoAssegnato) + " kg");
+                
+                // Cambia colore testo se superato il peso netto
+                if (pesoAssegnato > pesoNetto) {
+                    $("#peso-rimanente").addClass("text-danger").removeClass("text-success");
+                } else {
+                    $("#peso-rimanente").addClass("text-success").removeClass("text-danger");
+                }
+            }
+            
+            // CORREZIONE: Registrazione carico
+            $("#btn-registra").off("click").click(function() {
                 // Validazione base
                 let fornitore = $("#fornitore").val();
                 let tipologia = $("#tipologia").val();
@@ -1511,80 +818,196 @@
                 let pesoNetto = parseFloat($("#peso-netto").val());
                 let tipoAgrume = $("#tipo-agrume").val();
                 let varieta = $("#varieta").val();
-                let silosSelezionati = $("#silos-selezionati").val();
+                let modoScarico = $("#modo-scarico").val();
                 
-                if (!fornitore || !tipologia || !targa || isNaN(pesoLordo) || isNaN(pesoNetto) || 
-                    !tipoAgrume || !silosSelezionati) {
+                if (!fornitore || !tipologia || !targa || isNaN(pesoLordo) || isNaN(pesoNetto) || !tipoAgrume) {
                     alert("Compilare tutti i campi obbligatori");
                     return;
                 }
                 
-                // Ottieni i silos selezionati
-                let silosArray = silosSelezionati.split(", ");
-                if (silosArray.length === 0) {
-                    alert("Selezionare almeno un silos");
-                    return;
+                // Gestione scarico completo vs. scarico a lotti
+                if (modoScarico === "singolo") {
+                    // Scarico completo
+                    let silosSelezionati = $("#silos-selezionati").val();
+                    if (!silosSelezionati) {
+                        alert("Selezionare almeno un silos di destinazione");
+                        return;
+                    }
+                    
+                    // Ottieni i silos selezionati
+                    let silosArray = silosSelezionati.split(", ");
+                    if (silosArray.length === 0) {
+                        alert("Selezionare almeno un silos");
+                        return;
+                    }
+                    
+                    // Validazione capacità silos
+                    let pesoPerSilos = pesoNetto / silosArray.length;
+                    let silosValidati = true;
+                    
+                    silosArray.forEach(silosId => {
+                        let currentCapacity = 0;
+                        
+                        if (silosData[silosId]) {
+                            currentCapacity = silosData[silosId].quantita;
+                        }
+                        
+                        // Verifica se supera la capacità massima
+                        if (currentCapacity + pesoPerSilos > 7000) {
+                            alert(`Il silos ${silosId} supererebbe la capacità massima di 7000 kg. Selezionare più silos o ridurre il carico.`);
+                            silosValidati = false;
+                            return false; // break del forEach
+                        }
+                    });
+                    
+                    if (!silosValidati) return;
+                    
+                    // Distribuzione peso nei silos selezionati
+                    silosArray.forEach(silos => {
+                        // Se il silos non esiste già nei dati, lo creiamo
+                        if (!silosData[silos]) {
+                            silosData[silos] = {
+                                fornitore: fornitore,
+                                tipologia: tipologia,
+                                targa: targa,
+                                tipoAgrume: tipoAgrume,
+                                varieta: varieta,
+                                quantita: pesoPerSilos,
+                                stato: "In attesa",
+                                inizioLavorazione: null,
+                                fineLavorazione: null,
+                                portata: 0
+                            };
+                        } else {
+                            // Aggiorniamo i dati esistenti (aggiungiamo peso)
+                            silosData[silos].quantita += pesoPerSilos;
+                            silosData[silos].fornitore = fornitore;
+                            silosData[silos].targa = targa;
+                        }
+                        
+                        // Aggiorna visualizzazione silos
+                        updateSilosVisual(silos);
+                    });
+                    
+                    alert("Carico registrato con successo!");
+                    
+                    // Rimuovi selezione dai silos dopo il salvataggio
+                    $(".silos").removeClass("selected");
+                    $("#silos-selezionati").val("");
+                } else {
+                    // Scarico a lotti
+                    let lottiValidi = true;
+                    let pesoTotaleAssegnato = 0;
+                    let lottiData = [];
+                    
+                    // Valida ogni lotto
+                    $(".lotto-item").each(function(index) {
+                        let pesoLotto = parseFloat($(this).find(".lotto-peso").val());
+                        let lineaLotto = $(this).find(".lotto-linea").val();
+                        let silosLotto = $(this).find(".lotto-silos-selected").val();
+                        
+                        if (isNaN(pesoLotto) || pesoLotto <= 0) {
+                            alert(`Inserire un peso valido per il Lotto ${index + 1}`);
+                            lottiValidi = false;
+                            return false; // break
+                        }
+                        
+                        if (!lineaLotto) {
+                            alert(`Selezionare una linea per il Lotto ${index + 1}`);
+                            lottiValidi = false;
+                            return false; // break
+                        }
+                        
+                        if (!silosLotto) {
+                            alert(`Selezionare almeno un silos per il Lotto ${index + 1}`);
+                            lottiValidi = false;
+                            return false; // break
+                        }
+                        
+                        pesoTotaleAssegnato += pesoLotto;
+                        
+                        // Raccogliamo i dati del lotto
+                        lottiData.push({
+                            peso: pesoLotto,
+                            silosArray: silosLotto.split(", ")
+                        });
+                    });
+                    
+                    if (!lottiValidi) return;
+                    
+                    // Verifica peso totale
+                    if (Math.abs(pesoTotaleAssegnato - pesoNetto) > 1) { // Tolleriamo una piccola differenza per errori di arrotondamento
+                        if (!confirm(`Il peso totale assegnato (${Math.round(pesoTotaleAssegnato)} kg) è diverso dal peso netto (${Math.round(pesoNetto)} kg). Vuoi continuare comunque?`)) {
+                            return;
+                        }
+                    }
+                    
+                    // Verifica capacità silos per ogni lotto
+                    let tuttiSilosValidati = true;
+                    
+                    lottiData.forEach((lotto, index) => {
+                        let pesoPerSilos = lotto.peso / lotto.silosArray.length;
+                        
+                        lotto.silosArray.forEach(silosId => {
+                            let currentCapacity = 0;
+                            
+                            if (silosData[silosId]) {
+                                currentCapacity = silosData[silosId].quantita;
+                            }
+                            
+                            // Verifica se supera la capacità massima
+                            if (currentCapacity + pesoPerSilos > 7000) {
+                                alert(`Nel Lotto ${index + 1}, il silos ${silosId} supererebbe la capacità massima di 7000 kg.`);
+                                tuttiSilosValidati = false;
+                            }
+                        });
+                    });
+                    
+                    if (!tuttiSilosValidati) return;
+                    
+                    // Registrazione dei lotti
+                    lottiData.forEach((lotto, index) => {
+                        let pesoPerSilos = lotto.peso / lotto.silosArray.length;
+                        
+                        lotto.silosArray.forEach(silosId => {
+                            // Se il silos non esiste già nei dati, lo creiamo
+                            if (!silosData[silosId]) {
+                                silosData[silosId] = {
+                                    fornitore: fornitore,
+                                    tipologia: tipologia,
+                                    targa: targa,
+                                    tipoAgrume: tipoAgrume,
+                                    varieta: varieta,
+                                    quantita: pesoPerSilos,
+                                    stato: "In attesa",
+                                    inizioLavorazione: null,
+                                    fineLavorazione: null,
+                                    portata: 0
+                                };
+                            } else {
+                                // Aggiorniamo i dati esistenti (aggiungiamo peso)
+                                silosData[silosId].quantita += pesoPerSilos;
+                                silosData[silosId].fornitore = fornitore;
+                                silosData[silosId].targa = targa;
+                            }
+                            
+                            // Aggiorna visualizzazione silos
+                            updateSilosVisual(silosId);
+                        });
+                    });
+                    
+                    alert("Carico a lotti registrato con successo!");
                 }
                 
-                // Validazione capacità silos
-                let pesoPerSilos = pesoNetto / silosArray.length;
-                let silosVadilidati = true;
-                
-                silosArray.forEach(silosId => {
-                    let silosElement = $(`.silos[data-silos="${silosId}"]`);
-                    let currentCapacity = 0;
-                    
-                    if (silosData[silosId]) {
-                        currentCapacity = silosData[silosId].quantita;
-                    }
-                    
-                    // Verifica se supera la capacità massima
-                    if (currentCapacity + pesoPerSilos > 7000) {
-                        alert(`Il silos ${silosId} supererebbe la capacità massima di 7000 kg. Selezionare più silos o ridurre il carico.`);
-                        silosVadilidati = false;
-                    }
-                });
-                
-                if (!silosVadilidati) return;
-                
-                // Distribuzione peso nei silos selezionati
-                silosArray.forEach(silos => {
-                    // Se il silos non esiste già nei dati, lo creiamo
-                    if (!silosData[silos]) {
-                        silosData[silos] = {
-                            fornitore: fornitore,
-                            tipologia: tipologia,
-                            targa: targa,
-                            tipoAgrume: tipoAgrume,
-                            varieta: varieta,
-                            quantita: pesoPerSilos,
-                            stato: "In attesa",
-                            inizioLavorazione: null,
-                            fineLavorazione: null,
-                            portata: 0
-                        };
-                    } else {
-                        // Aggiorniamo i dati esistenti (aggiungiamo peso)
-                        silosData[silos].quantita += pesoPerSilos;
-                        silosData[silos].fornitore = fornitore;
-                        silosData[silos].targa = targa;
-                    }
-                    
-                    // Aggiorna visualizzazione silos
-                    updateSilosVisual(silos);
-                });
-                
-                // Aggiorna tabella stato silos
+                // Aggiorna tabella stato silos e report
                 updateSilosTable();
                 updateReportData();
                 
                 // Reset form e selezioni
                 resetForm();
-                
-                alert("Carico registrato con successo!");
             });
             
-            // Aggiornamento visuale silos
+            // CORREZIONE: Aggiornamento visuale silos
             function updateSilosVisual(silosId) {
                 let silosElement = $(`.silos[data-silos="${silosId}"]`);
                 let silosContentElement = silosElement.find(".silos-content");
@@ -1619,8 +1042,11 @@
                 }
             }
             
-            // Aggiornamento tabella stato silos
+            // CORREZIONE: Aggiornamento tabella stato silos
             function updateSilosTable() {
+                console.log("Aggiornamento tabella silos");
+                console.log(silosData); // Debug
+                
                 let tableBody = $("#silos-table tbody");
                 tableBody.empty();
                 
@@ -1742,7 +1168,26 @@
             
             // Reset form
             $("#btn-reset").click(function() {
-                resetForm();
+                if (confirm("Attenzione: questa operazione cancellerà TUTTI i dati di carico nei silos. Continuare?")) {
+                    resetForm();
+                    // Svuota tutti i dati dei silos
+                    silosData = {};
+                    
+                    // Aggiorna visualizzazione silos
+                    $(".silos").each(function() {
+                        $(this).removeClass("empty partial full selected");
+                        $(this).addClass("empty");
+                        $(this).find(".silos-content").empty();
+                        $(this).find(".silos-badge").remove();
+                        $(this).find(".silos-capacity").text("0/7000 kg");
+                    });
+                    
+                    // Aggiorna tabelle
+                    updateSilosTable();
+                    updateReportData();
+                    
+                    alert("Tutti i dati sono stati cancellati con successo!");
+                }
             });
             
             function resetForm() {
@@ -1792,20 +1237,39 @@
                 $("#waiting").text(Math.round(waiting) + " kg");
                 
                 // Aggiornamento tabelle
+                updateSupplierTable// Aggiornamento tabelle
                 updateSupplierTable(supplierData);
                 updateFruitTable(fruitData);
             }
             
-            // Aggiornamento tabella fornitori
+            // MODIFICA: Aggiornamento tabella fornitori con linee di stoccaggio
             function updateSupplierTable(data) {
                 let tableBody = $("#supplier-table tbody");
                 tableBody.empty();
                 
+                // Creiamo un oggetto per tracciare le linee di stoccaggio per fornitore
+                let supplierLines = {};
+                
+                // Raccogliamo le informazioni sulle linee per ogni fornitore
+                for (let silosId in silosData) {
+                    let data = silosData[silosId];
+                    let fornitore = data.fornitore;
+                    let linea = silosId.charAt(0); // Prende la prima lettera dell'ID del silos (A, B o C)
+                    
+                    if (!supplierLines[fornitore]) {
+                        supplierLines[fornitore] = new Set();
+                    }
+                    supplierLines[fornitore].add(linea);
+                }
+                
+                // Ora creiamo le righe della tabella
                 for (let supplier in data) {
+                    let lineeFornitore = Array.from(supplierLines[supplier] || []).sort().join(", ");
                     let row = `
                         <tr>
                             <td>${supplier}</td>
                             <td>${Math.round(data[supplier])} kg</td>
+                            <td>${lineeFornitore}</td>
                         </tr>
                     `;
                     tableBody.append(row);
@@ -1847,7 +1311,7 @@
                     targa: "AA123BB",
                     tipoAgrume: "Arance rosse",
                     varieta: "Tarocco",
-                    quantita: 8500,
+                    quantita: 6500,
                     stato: "In lavorazione",
                     inizioLavorazione: "2025-05-15T08:30",
                     fineLavorazione: null,
@@ -1860,7 +1324,7 @@
                     targa: "AA123BB",
                     tipoAgrume: "Arance rosse",
                     varieta: "Tarocco",
-                    quantita: 8500,
+                    quantita: 6500,
                     stato: "In attesa",
                     inizioLavorazione: null,
                     fineLavorazione: null,
@@ -1874,7 +1338,7 @@
                     targa: "CC456DD",
                     tipoAgrume: "Limoni",
                     varieta: "Verdello",
-                    quantita: 6200,
+                    quantita: 6000,
                     stato: "In attesa",
                     inizioLavorazione: null,
                     fineLavorazione: null,
@@ -1888,7 +1352,7 @@
                     targa: "EE789FF",
                     tipoAgrume: "Mandarini",
                     varieta: "Ciaculli",
-                    quantita: 7800,
+                    quantita: 7000,
                     stato: "Completato",
                     inizioLavorazione: "2025-05-14T14:00",
                     fineLavorazione: "2025-05-14T18:30",
@@ -1903,9 +1367,6 @@
                 updateSilosTable();
                 updateReportData();
             }
-            
-            // Inizializza con dati di esempio
-            initDemoData();
             
             // Funzione per verificare se un silos è pieno
             function isSilosFull(silosId) {
@@ -1958,6 +1419,14 @@
                     alert("Attenzione:\n" + avviso + "Selezionare più silos o ridurre il carico.");
                 }
             }
+            
+            // Inizializza con dati di esempio
+            initDemoData();
+            
+            // Rendi le funzioni disponibili globalmente se necessario
+            window.updateSilosTable = updateSilosTable;
+            window.updateSilosVisual = updateSilosVisual;
+            window.updateReportData = updateReportData;
         });
     </script>
 </body>
