@@ -348,6 +348,28 @@
                                 <input type="text" class="form-control" id="silos-selezionati" readonly>
                             </div>
                         </div>
+                        
+                        <!-- NUOVA SEZIONE: Linee di Trasformazione -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h5>Linee di Trasformazione</h5>
+                                <p>Seleziona la linea di trasformazione per questo carico</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="linea-trasformazione" class="form-label">Linea di Trasformazione</label>
+                                <select class="form-select" id="linea-trasformazione" required>
+                                    <option value="">Seleziona linea di trasformazione</option>
+                                    <option value="BOE/1100">BOE/1100</option>
+                                    <option value="B/SF">B/SF</option>
+                                    <option value="GOE INT/400">GOE INT/400</option>
+                                    <option value="ALTRE">ALTRE</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6" id="altra-linea-container" style="display: none;">
+                                <label for="altra-linea" class="form-label">Specifica altra linea</label>
+                                <input type="text" class="form-control" id="altra-linea" placeholder="Specifica il nome della linea">
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Sezione per scarico a lotti -->
@@ -411,6 +433,28 @@
                                 <input type="text" class="form-control" id="peso-rimanente" readonly value="0 kg">
                             </div>
                         </div>
+                        
+                        <!-- NUOVA SEZIONE: Linee di Trasformazione per lotti -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h5>Linee di Trasformazione</h5>
+                                <p>Seleziona la linea di trasformazione per questo carico</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="linea-trasformazione-lotti" class="form-label">Linea di Trasformazione</label>
+                                <select class="form-select" id="linea-trasformazione-lotti" required>
+                                    <option value="">Seleziona linea di trasformazione</option>
+                                    <option value="BOE/1100">BOE/1100</option>
+                                    <option value="B/SF">B/SF</option>
+                                    <option value="GOE INT/400">GOE INT/400</option>
+                                    <option value="ALTRE">ALTRE</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6" id="altra-linea-container-lotti" style="display: none;">
+                                <label for="altra-linea-lotti" class="form-label">Specifica altra linea</label>
+                                <input type="text" class="form-control" id="altra-linea-lotti" placeholder="Specifica il nome della linea">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="row mt-4">
@@ -437,6 +481,7 @@
                                 <th>Varietà</th>
                                 <th>Tipologia</th>
                                 <th>Quantità (kg)</th>
+                                <th>Linea Trasformazione</th>
                                 <th>Inizio Lavorazione</th>
                                 <th>Fine Lavorazione</th>
                                 <th>Portata (kg/h)</th>
@@ -808,6 +853,26 @@
                 }
             }
             
+            // Gestione campo altra linea di trasformazione
+            $("#linea-trasformazione").change(function() {
+                if ($(this).val() === "ALTRE") {
+                    $("#altra-linea-container").show();
+                } else {
+                    $("#altra-linea-container").hide();
+                    $("#altra-linea").val("");
+                }
+            });
+            
+            // Gestione campo altra linea di trasformazione per lotti
+            $("#linea-trasformazione-lotti").change(function() {
+                if ($(this).val() === "ALTRE") {
+                    $("#altra-linea-container-lotti").show();
+                } else {
+                    $("#altra-linea-container-lotti").hide();
+                    $("#altra-linea-lotti").val("");
+                }
+            });
+            
             // CORREZIONE: Registrazione carico
             $("#btn-registra").off("click").click(function() {
                 // Validazione base
@@ -832,6 +897,23 @@
                     if (!silosSelezionati) {
                         alert("Selezionare almeno un silos di destinazione");
                         return;
+                    }
+                    
+                    // Validazione linea di trasformazione
+                    let lineaTrasformazione = $("#linea-trasformazione").val();
+                    if (!lineaTrasformazione) {
+                        alert("Selezionare una linea di trasformazione");
+                        return;
+                    }
+                    
+                    // Se è stato selezionato "ALTRE", prendi il valore dal campo testo
+                    if (lineaTrasformazione === "ALTRE") {
+                        let altraLinea = $("#altra-linea").val();
+                        if (!altraLinea) {
+                            alert("Specificare il nome dell'altra linea di trasformazione");
+                            return;
+                        }
+                        lineaTrasformazione = altraLinea;
                     }
                     
                     // Ottieni i silos selezionati
@@ -876,13 +958,15 @@
                                 stato: "In attesa",
                                 inizioLavorazione: null,
                                 fineLavorazione: null,
-                                portata: 0
+                                portata: 0,
+                                lineaTrasformazione: lineaTrasformazione
                             };
                         } else {
                             // Aggiorniamo i dati esistenti (aggiungiamo peso)
                             silosData[silos].quantita += pesoPerSilos;
                             silosData[silos].fornitore = fornitore;
                             silosData[silos].targa = targa;
+                            silosData[silos].lineaTrasformazione = lineaTrasformazione;
                         }
                         
                         // Aggiorna visualizzazione silos
@@ -899,6 +983,23 @@
                     let lottiValidi = true;
                     let pesoTotaleAssegnato = 0;
                     let lottiData = [];
+                    
+                    // Validazione linea di trasformazione per lotti
+                    let lineaTrasformazione = $("#linea-trasformazione-lotti").val();
+                    if (!lineaTrasformazione) {
+                        alert("Selezionare una linea di trasformazione");
+                        return;
+                    }
+                    
+                    // Se è stato selezionato "ALTRE", prendi il valore dal campo testo
+                    if (lineaTrasformazione === "ALTRE") {
+                        let altraLinea = $("#altra-linea-lotti").val();
+                        if (!altraLinea) {
+                            alert("Specificare il nome dell'altra linea di trasformazione");
+                            return;
+                        }
+                        lineaTrasformazione = altraLinea;
+                    }
                     
                     // Valida ogni lotto
                     $(".lotto-item").each(function(index) {
@@ -982,13 +1083,15 @@
                                     stato: "In attesa",
                                     inizioLavorazione: null,
                                     fineLavorazione: null,
-                                    portata: 0
+                                    portata: 0,
+                                    lineaTrasformazione: lineaTrasformazione
                                 };
                             } else {
                                 // Aggiorniamo i dati esistenti (aggiungiamo peso)
                                 silosData[silosId].quantita += pesoPerSilos;
                                 silosData[silosId].fornitore = fornitore;
                                 silosData[silosId].targa = targa;
+                                silosData[silosId].lineaTrasformazione = lineaTrasformazione;
                             }
                             
                             // Aggiorna visualizzazione silos
@@ -1061,6 +1164,7 @@
                             <td>${data.varieta || "-"}</td>
                             <td>${data.tipologia}</td>
                             <td>${Math.round(data.quantita)} kg</td>
+                            <td>${data.lineaTrasformazione || "-"}</td>
                             <td>${data.inizioLavorazione || "-"}</td>
                             <td>${data.fineLavorazione || "-"}</td>
                             <td>${data.portata > 0 ? Math.round(data.portata) + " kg/h" : "-"}</td>
@@ -1146,6 +1250,9 @@
                 if (!startTime || isNaN(quantity)) {
                     alert("Inserire almeno l'orario di inizio e la quantità");
                     return;
+                    if (!startTime || isNaN(quantity)) {
+                    alert("Inserire almeno l'orario di inizio e la quantità");
+                    return;
                 }
                 
                 // Aggiorna i dati del silos
@@ -1194,6 +1301,8 @@
                 $("#reception-form")[0].reset();
                 $(".silos").removeClass("selected");
                 $("#silos-selezionati").val("");
+                $("#altra-linea-container").hide();
+                $("#altra-linea-container-lotti").hide();
             }
             
             // Aggiornamento dati report
@@ -1237,7 +1346,6 @@
                 $("#waiting").text(Math.round(waiting) + " kg");
                 
                 // Aggiornamento tabelle
-                updateSupplierTable// Aggiornamento tabelle
                 updateSupplierTable(supplierData);
                 updateFruitTable(fruitData);
             }
@@ -1315,7 +1423,8 @@
                     stato: "In lavorazione",
                     inizioLavorazione: "2025-05-15T08:30",
                     fineLavorazione: null,
-                    portata: 2125
+                    portata: 2125,
+                    lineaTrasformazione: "BOE/1100"
                 };
                 
                 silosData["A2"] = {
@@ -1328,7 +1437,8 @@
                     stato: "In attesa",
                     inizioLavorazione: null,
                     fineLavorazione: null,
-                    portata: 0
+                    portata: 0,
+                    lineaTrasformazione: "BOE/1100"
                 };
                 
                 // Simulazione carico 2
@@ -1342,7 +1452,8 @@
                     stato: "In attesa",
                     inizioLavorazione: null,
                     fineLavorazione: null,
-                    portata: 0
+                    portata: 0,
+                    lineaTrasformazione: "B/SF"
                 };
                 
                 // Simulazione carico 3
@@ -1356,7 +1467,8 @@
                     stato: "Completato",
                     inizioLavorazione: "2025-05-14T14:00",
                     fineLavorazione: "2025-05-14T18:30",
-                    portata: 1733
+                    portata: 1733,
+                    lineaTrasformazione: "GOE INT/400"
                 };
                 
                 // Aggiorna visualizzazione
