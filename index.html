@@ -644,27 +644,28 @@
         
         $(document).ready(function() {
             // CORREZIONE: Gestione selezione silos
-            $(".silos").off("click").click(function() {
-                // Verifica se il silos è pieno
-                let silosId = $(this).data("silos");
-                let isFull = false;
-                
-                if (silosData[silosId] && silosData[silosId].quantita >= 7000) {
-                    isFull = true;
-                }
-                
-                if (isFull) {
-                    alert("Attenzione: questo silos è pieno (7000 kg). Selezionare un altro silos.");
-                    return;
-                }
-                
-                // Toggle della classe selected
-                $(this).toggleClass("selected");
-                
-                // Aggiornamento campo dei silos selezionati
-                updateSelectedSilos();
-            });
-            
+$(".silos").each(function() {
+    $(this).off("click").on("click", function() {
+        // Verifica se il silos è pieno
+        let silosId = $(this).data("silos");
+        let isFull = false;
+        
+        if (silosData[silosId] && silosData[silosId].quantita >= 7000) {
+            isFull = true;
+        }
+        
+        if (isFull) {
+            alert("Attenzione: questo silos è pieno (7000 kg). Selezionare un altro silos.");
+            return;
+        }
+        
+        // Toggle della classe selected
+        $(this).toggleClass("selected");
+        
+        // Aggiornamento campo dei silos selezionati
+        updateSelectedSilos();
+    });
+});            
             // Funzione per aggiornare il campo silos selezionati
             function updateSelectedSilos() {
                 let selected = [];
